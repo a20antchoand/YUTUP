@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Practica5">
         <activity
+            android:name=".joc"
+            android:exported="true" />
+        <activity
             android:name=".MainActivity2"
             android:exported="false" />
         <activity

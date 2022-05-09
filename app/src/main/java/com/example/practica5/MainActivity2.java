@@ -64,11 +64,11 @@ public class MainActivity2 extends AppCompatActivity {
 
     private void reproduir(ListElementMusica item) {
 
+        int idMusica = item.getId();
+
         if (MainActivity.reproductor.isPlaying()) {
 
             MainActivity.reproductor.stop();
-
-            int idMusica = item.getId();
 
             MainActivity.reproductor = MediaPlayer.create(MainActivity2.this, idMusica);
 
@@ -76,7 +76,6 @@ public class MainActivity2 extends AppCompatActivity {
             MainActivity.reproductor.setLooping(true);
 
         } else {
-            int idMusica = item.getId();
 
             MainActivity.reproductor = MediaPlayer.create(MainActivity2.this, idMusica);
 
