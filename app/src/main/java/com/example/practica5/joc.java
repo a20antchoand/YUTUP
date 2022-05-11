@@ -84,7 +84,7 @@ public class joc extends AppCompatActivity {
                             puntsText.setText("" + ++puntuacio);
 
                             if (puntuacio % 3 == 0 && puntuacio > 0)
-                                if (leaveDelay > 250)
+                                if (leaveDelay > 500)
                                     leaveDelay -= 250;
 
                             if (puntuacio % 25 == 0 && puntuacio > 0)
