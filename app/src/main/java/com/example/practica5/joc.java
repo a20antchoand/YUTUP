@@ -3,6 +3,7 @@ package com.example.practica5;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -13,6 +14,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.airbnb.lottie.LottieAnimationView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +43,7 @@ public class joc extends AppCompatActivity {
         setup();
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     public void setup() {
 
         vidasText = findViewById(R.id.vidas);
@@ -49,7 +53,7 @@ public class joc extends AppCompatActivity {
 
         constraintLayout = findViewById(R.id.constraintLayout);
 
-        image.setOnTouchListener((View.OnTouchListener) (view, motionEvent) -> {
+        image.setOnTouchListener((View view, @SuppressLint("ClickableViewAccessibility") MotionEvent motionEvent) -> {
 
             switch (motionEvent.getActionMasked()) {
 
@@ -65,10 +69,14 @@ public class joc extends AppCompatActivity {
                     float distanciax = movedX - x;
                     float distanciay = movedy - y;
 
+                    ConstraintLayout constraintLayoutParent = findViewById(R.id.constraint_joc);
 
-                    image.setX(image.getX() + distanciax);
-                    image.setY(image.getY() + distanciay);
+                    if (image.getX() + distanciax > 5 && image.getX() + distanciax < (constraintLayoutParent.getWidth() - (image.getWidth() + 5))) {
 
+                        image.setX(image.getX() + distanciax);
+                        image.setY(image.getY() + distanciay);
+
+                    }
 
                     Rect rectYUTUP = new Rect((int)image.getX(), (int)image.getY(), (int)image.getX() + 100, (int)image.getY() + 100);
 
@@ -98,6 +106,20 @@ public class joc extends AppCompatActivity {
                     }
 
                     if (eliminar.getRect() != null && vidas > 0) {
+
+                        LottieAnimationView animationView = findViewById(R.id.animationView);
+
+                        animationView.setVisibility(View.VISIBLE);
+
+                        animationView.setX(eliminar.getImageView().getX());
+                        animationView.setY(eliminar.getImageView().getY());
+
+                        animationView.playAnimation();
+
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            animationView.setVisibility(View.INVISIBLE);
+                        }, 3700);
+
                         constraintLayout.removeView(eliminar.getImageView());
                         objetos.remove(eliminar);
                     }

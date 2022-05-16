@@ -36,9 +36,11 @@ public class MainActivity2 extends AppCompatActivity {
         Field[] fields = R.raw.class.getFields();
         for (Field field : fields) {
             try {
-                MediaPlayer aux = new MediaPlayer();
-                aux = MediaPlayer.create(MainActivity2.this, field.getInt(field));
-                listElements.add(new ListElementMusica(field.getName(), aux.getDuration(), field.getInt(field)));
+                if (!field.getName().contains(".json")) {
+                    MediaPlayer aux;
+                    aux = MediaPlayer.create(MainActivity2.this, field.getInt(field));
+                    listElements.add(new ListElementMusica(field.getName(), aux.getDuration(), field.getInt(field)));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
