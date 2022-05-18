@@ -5,8 +5,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -27,6 +27,7 @@ public class joc extends AppCompatActivity {
 
     float x = 0, y = 0;
     public Handler HandlerIntroduirHores = new Handler();
+    Handler perdreVida = new Handler();
 
     public ConstraintLayout constraintLayout;
     public TextView vidasText, puntsText;
@@ -38,9 +39,17 @@ public class joc extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_joc);
 
+        setup();
+
+
+        if (savedInstanceState != null) {
+            vidas = savedInstanceState.getInt("vidas");
+            puntuacio = savedInstanceState.getInt("punts");
+        }
+
         MainActivity.reproductor.pause();
 
-        setup();
+
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -99,8 +108,6 @@ public class joc extends AppCompatActivity {
                                 if (appearDelay > 250)
                                     appearDelay -= 250;
 
-                            System.out.println("LEAVE TIME: " + leaveDelay);
-                            System.out.println("APPEAR TIME: " + appearDelay);
 
                         }
                     }
@@ -118,10 +125,28 @@ public class joc extends AppCompatActivity {
 
                         new Handler(Looper.getMainLooper()).postDelayed(() -> {
                             animationView.setVisibility(View.INVISIBLE);
-                        }, 3700);
+                        }, 700);
+
+                        MediaPlayer matatopo;
+                        matatopo = MediaPlayer.create(this, R.raw.matatopo);
+                        matatopo.setVolume(1000, 1000);
+                        matatopo.start();
 
                         constraintLayout.removeView(eliminar.getImageView());
                         objetos.remove(eliminar);
+                    }
+
+                    if (puntuacio >= 150) {
+                        stopRepeatingTask();
+
+                        SweetAlertDialog sDialog = new SweetAlertDialog(joc.this, SweetAlertDialog.SUCCESS_TYPE);
+                        sDialog
+                                .setTitleText("Has guanyat!")
+                                .setContentText("Vols tornar a jugar?")
+                                .setConfirmText("Si")
+                                .setCancelText("No")
+                                .setCancelable(false);
+                        sDialog.show();
                     }
 
                     break;
@@ -170,9 +195,7 @@ public class joc extends AppCompatActivity {
 
             objetos.add(itemTocable);
 
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                perdreVida(itemTocable);
-            }, leaveDelay);
+            perdreVida.postDelayed(() -> perdreVida(itemTocable), leaveDelay);
         }
 
     }
@@ -188,14 +211,28 @@ public class joc extends AppCompatActivity {
             if (vidas <= 0) {
                 stopRepeatingTask();
 
-                new SweetAlertDialog(joc.this, SweetAlertDialog.BUTTON_POSITIVE)
-                        .setTitleText("Has perdut!")
+                MainActivity.reproductor.pause();
+
+                MediaPlayer reproductorFail;
+                reproductorFail = MediaPlayer.create(this, R.raw.perder);
+                reproductorFail.start();
+
+                SweetAlertDialog sDialog = new SweetAlertDialog(joc.this, SweetAlertDialog.ERROR_TYPE);
+                sDialog.setTitleText("Has perdut!")
                         .setContentText("Vols tornar a jugar?")
                         .setConfirmText("Si")
                         .setCancelText("No")
-                        .setConfirmClickListener(l -> startActivity(new Intent(this, joc.class)))
-                        .setCancelClickListener(l -> startActivity(new Intent(this, MainActivity.class)))
-                        .show();
+                        .setConfirmClickListener(l -> {
+                            startActivity(new Intent(this, joc.class));
+                            MainActivity.reproductor.start();
+                        })
+                        .setCancelClickListener(l -> {
+                            startActivity(new Intent(this, MainActivity.class));
+                            MainActivity.reproductor.start();
+                        })
+                        .setCancelable(false);
+                sDialog.show();
+
 
 
             }
@@ -208,7 +245,22 @@ public class joc extends AppCompatActivity {
 
     void stopRepeatingTask() {
         HandlerIntroduirHores.removeCallbacks(mStatusChecker);
+        perdreVida.removeCallbacksAndMessages(null);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stopRepeatingTask();
+
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt("vidas", vidas);
+        outState.putInt("punts", puntuacio);
+        super.onSaveInstanceState(outState);
+    }
 
 }

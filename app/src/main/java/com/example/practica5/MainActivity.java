@@ -38,6 +38,12 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         MainActivity.getInstance().setOnVisibilityChangeListener(value -> Log.d("isAppInBackground", String.valueOf(value)));
 
         findViewById(R.id.imageView1).setOnClickListener(l -> startActivity(new Intent(this, joc.class)));
+
+        if (!reproductor.isPlaying()) {
+            reproductor = MediaPlayer.create(this, R.raw.game_boy);
+            reproductor.start();
+            reproductor.setLooping(true);
+        }
     }
 
 
