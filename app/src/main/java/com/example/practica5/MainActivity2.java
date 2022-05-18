@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.practica5.recyclerView.ListAdapterMusica;
 import com.example.practica5.recyclerView.ListElementMusica;
@@ -16,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity {
+
+    List<ListElementMusica> listElements = new ArrayList<>();
+    ListAdapterMusica listAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +36,6 @@ public class MainActivity2 extends AppCompatActivity {
 
     private void setup() {
 
-        List<ListElementMusica> listElements = new ArrayList<>();
-
         Field[] fields = R.raw.class.getFields();
         for (Field field : fields) {
             try {
@@ -47,7 +50,7 @@ public class MainActivity2 extends AppCompatActivity {
         }
 
 
-        ListAdapterMusica listAdapter = new ListAdapterMusica(listElements, this, this::reproduir);
+        listAdapter = new ListAdapterMusica(listElements, this, this::reproduir);
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -83,7 +86,12 @@ public class MainActivity2 extends AppCompatActivity {
 
             MainActivity.reproductor.start();
             MainActivity.reproductor.setLooping(true);
+
         }
+
+
+
+
     }
 
     @Override

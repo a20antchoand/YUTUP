@@ -47,9 +47,6 @@ public class joc extends AppCompatActivity {
             puntuacio = savedInstanceState.getInt("punts");
         }
 
-        MainActivity.reproductor.pause();
-
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -127,10 +124,12 @@ public class joc extends AppCompatActivity {
                             animationView.setVisibility(View.INVISIBLE);
                         }, 700);
 
-                        MediaPlayer matatopo;
-                        matatopo = MediaPlayer.create(this, R.raw.matatopo);
-                        matatopo.setVolume(1000, 1000);
-                        matatopo.start();
+                        new Handler(Looper.getMainLooper()).post(() -> {
+                            MediaPlayer matatopo;
+                            matatopo = MediaPlayer.create(this, R.raw.matatopo);
+                            matatopo.setVolume(1000, 1000);
+                            matatopo.start();
+                        });
 
                         constraintLayout.removeView(eliminar.getImageView());
                         objetos.remove(eliminar);
@@ -145,6 +144,14 @@ public class joc extends AppCompatActivity {
                                 .setContentText("Vols tornar a jugar?")
                                 .setConfirmText("Si")
                                 .setCancelText("No")
+                                .setConfirmClickListener(l -> {
+                                    startActivity(new Intent(this, joc.class));
+                                    MainActivity.reproductor.start();
+                                })
+                                .setCancelClickListener(l -> {
+                                    startActivity(new Intent(this, MainActivity.class));
+                                    MainActivity.reproductor.start();
+                                })
                                 .setCancelable(false);
                         sDialog.show();
                     }
@@ -185,7 +192,7 @@ public class joc extends AppCompatActivity {
             imagebyCode.setMaxWidth(50);
             imagebyCode.setBackground(getResources().getDrawable(R.drawable.topo2));
             imagebyCode.setX(rand.nextInt(((constraintLayout.getMeasuredWidth() - 100) - 100) + 1) + 100);
-            imagebyCode.setY(rand.nextInt(((constraintLayout.getMeasuredHeight() - 100) - 100) + 1) + 100);
+            imagebyCode.setY(rand.nextInt(((constraintLayout.getMeasuredHeight() - 200) - 200) + 1) + 200);
 
             constraintLayout.addView(imagebyCode);
 

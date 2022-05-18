@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.practica5.R;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -19,6 +20,7 @@ public class ListAdapterMusica  extends RecyclerView.Adapter<ListAdapterMusica.V
     private LayoutInflater mInflater;
     private Context context;
     final onItemClickListener listener;
+    private List<View> views = new ArrayList<>();
 
     public interface onItemClickListener {
         void onItemClickListener(ListElementMusica item);
@@ -39,6 +41,7 @@ public class ListAdapterMusica  extends RecyclerView.Adapter<ListAdapterMusica.V
     @Override
     public ViewHolder onCreateViewHolder (ViewGroup parent, int ViewType) {
         View view = mInflater.from(parent.getContext()).inflate(R.layout.list_element_musica, null);
+        views.add(view);
         return new ViewHolder(view);
     }
 
@@ -70,7 +73,19 @@ public class ListAdapterMusica  extends RecyclerView.Adapter<ListAdapterMusica.V
 
             itemView.setOnClickListener(view -> {
                 listener.onItemClickListener(item);
+
+                System.out.println("VIWS: " + views.size());
+
+                for (View view2 : views) {
+                    view2.setBackgroundColor(context.getResources().getColor(R.color.white));
+
+                }
+
+                itemView.setBackgroundColor(context.getResources().getColor(R.color.blue_btn_bg_color));
+
             });
+
+
 
         }
     }
