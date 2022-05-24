@@ -5,10 +5,14 @@ import android.widget.ImageView;
 
 public class itemTocable {
 
+    int id;
     Rect rect;
     ImageView imageView;
 
-    public itemTocable(Rect rect, ImageView imageView) {
+
+
+    public itemTocable(int id, Rect rect, ImageView imageView) {
+        this.id = id;
         this.rect = rect;
         this.imageView = imageView;
     }
@@ -27,5 +31,13 @@ public class itemTocable {
 
     public void setImageView(ImageView imageView) {
         this.imageView = imageView;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
