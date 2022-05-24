@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         findViewById(R.id.imageView1).setOnClickListener(l -> startActivity(new Intent(this, joc.class)));
 
         if (!reproductor.isPlaying()) {
-            reproductor = MediaPlayer.create(this, R.raw.game_boy);
+            reproductor = MediaPlayer.create(this, R.raw.olas);
             reproductor.start();
             reproductor.setLooping(true);
         }

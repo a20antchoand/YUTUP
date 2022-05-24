@@ -27,12 +27,12 @@ public class joc extends AppCompatActivity {
 
     float x = 0, y = 0;
     public Handler HandlerIntroduirHores = new Handler();
-    Handler perdreVida = new Handler();
+    Handler handler = new Handler();
 
     public ConstraintLayout constraintLayout;
     public TextView vidasText, puntsText;
     int puntuacio = 0, vidas = 5, leaveDelay = 10000, appearDelay = 1000;
-    List<itemTocable> objetos = new ArrayList<itemTocable>();
+    List<itemTocable> objetos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,14 +88,14 @@ public class joc extends AppCompatActivity {
 
                     System.out.println(objetos);
 
-                    itemTocable eliminar = new itemTocable(null, null);
+                    itemTocable eliminar = new itemTocable(-1, null, null);
 
                     for (itemTocable colision : objetos) {
 
                         if (Rect.intersects(colision.getRect(), rectYUTUP) && vidas > 0) {
                             System.out.println("TOCAT");
                             eliminar = colision;
-                            puntsText.setText("" + ++puntuacio);
+
 
                             if (puntuacio % 3 == 0 && puntuacio > 0)
                                 if (leaveDelay > 500)
@@ -105,34 +105,54 @@ public class joc extends AppCompatActivity {
                                 if (appearDelay > 250)
                                     appearDelay -= 250;
 
+                            if (eliminar.getId() == 1) {
+                                puntuacio++;
+                            } else if (eliminar.getId() == 2) {
+                                puntuacio++;
+                                vidas+=1;
+                            }
+
+                            puntsText.setText("" + puntuacio);
+                            vidasText.setText("" + vidas);
 
                         }
                     }
 
                     if (eliminar.getRect() != null && vidas > 0) {
+                        if (eliminar.getImageView().getDrawable() == getResources().getDrawable(R.drawable.topo2)) {
+                            LottieAnimationView animationView = findViewById(R.id.animationView);
 
-                        LottieAnimationView animationView = findViewById(R.id.animationView);
+                            animationView.setVisibility(View.VISIBLE);
 
-                        animationView.setVisibility(View.VISIBLE);
+                            animationView.setX(eliminar.getImageView().getX());
+                            animationView.setY(eliminar.getImageView().getY());
 
-                        animationView.setX(eliminar.getImageView().getX());
-                        animationView.setY(eliminar.getImageView().getY());
+                            animationView.playAnimation();
 
-                        animationView.playAnimation();
+                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                                animationView.setVisibility(View.INVISIBLE);
+                            }, 700);
 
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                            animationView.setVisibility(View.INVISIBLE);
-                        }, 700);
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                MediaPlayer matatopo;
+                                matatopo = MediaPlayer.create(this, R.raw.matatopo);
+                                matatopo.setVolume(1000, 1000);
+                                matatopo.start();
+                            });
 
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            MediaPlayer matatopo;
-                            matatopo = MediaPlayer.create(this, R.raw.matatopo);
-                            matatopo.setVolume(1000, 1000);
-                            matatopo.start();
-                        });
+                            constraintLayout.removeView(eliminar.getImageView());
+                            objetos.remove(eliminar);
+                        } else {
 
-                        constraintLayout.removeView(eliminar.getImageView());
-                        objetos.remove(eliminar);
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                MediaPlayer bananPlayer;
+                                bananPlayer = MediaPlayer.create(this, R.raw.colision_banana);
+                                bananPlayer.start();
+                            });
+
+                            constraintLayout.removeView(eliminar.getImageView());
+                            objetos.remove(eliminar);
+                        }
                     }
 
                     if (puntuacio >= 150) {
@@ -164,6 +184,7 @@ public class joc extends AppCompatActivity {
         });
 
         startRepeatingTask();
+        handler.postDelayed(() -> mostrarBanana(), 10000);
 
     }
 
@@ -184,8 +205,9 @@ public class joc extends AppCompatActivity {
 
     private void updateStatus() {
 
-        if (objetos.size() < 300) {
-            Random rand = new Random();
+        Random rand = new Random();
+
+        if (objetos.size() < 10) {
 
             ImageView imagebyCode = new ImageView(joc.this);
 
@@ -198,12 +220,38 @@ public class joc extends AppCompatActivity {
 
             Rect rect = new Rect((int) imagebyCode.getX(), (int) imagebyCode.getY(), (int) imagebyCode.getX() + 200, (int) imagebyCode.getY() + 200);
 
-            itemTocable itemTocable = new itemTocable(rect, imagebyCode);
+            itemTocable itemTocable = new itemTocable(1, rect, imagebyCode);
 
             objetos.add(itemTocable);
 
-            perdreVida.postDelayed(() -> perdreVida(itemTocable), leaveDelay);
+            handler.postDelayed(() -> perdreVida(itemTocable), leaveDelay);
         }
+
+    }
+
+    public void mostrarBanana () {
+
+        Random rand = new Random();
+
+        ImageView imagebyCode = new ImageView(joc.this);
+
+        imagebyCode.setMaxWidth(50);
+        imagebyCode.setBackground(getResources().getDrawable(R.drawable.banana));
+        imagebyCode.setX(rand.nextInt(((constraintLayout.getMeasuredWidth() - 100) - 100) + 1) + 100);
+        imagebyCode.setY(rand.nextInt(((constraintLayout.getMeasuredHeight() - 200) - 200) + 1) + 200);
+
+
+        constraintLayout.addView(imagebyCode);
+
+        Rect rect = new Rect((int) imagebyCode.getX(), (int) imagebyCode.getY(), (int) imagebyCode.getX() + 200, (int) imagebyCode.getY() + 200);
+
+        itemTocable itemTocable = new itemTocable(2, rect, imagebyCode);
+
+        objetos.add(itemTocable);
+
+        handler.postDelayed(() -> perdreVida(itemTocable), leaveDelay);
+
+        handler.postDelayed(() -> mostrarBanana(), 15000);
 
     }
 
@@ -252,7 +300,7 @@ public class joc extends AppCompatActivity {
 
     void stopRepeatingTask() {
         HandlerIntroduirHores.removeCallbacks(mStatusChecker);
-        perdreVida.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null);
     }
 
     @Override
